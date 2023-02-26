@@ -105,6 +105,9 @@ const (
 	// MySQLColumnCommentConvention is an advisor type for MySQL column comment convention.
 	MySQLColumnCommentConvention Type = "bb.plugin.advisor.mysql.column.comment"
 
+	// MySQLColumnDisallowDropInIndexKeys is an advisor type for MySQL disallow drop column in index keys
+	MySQLColumnDisallowDropInIndexKeys Type = "bb.plugin.advisor.mysql.column.disallow-drop-in-index"
+
 	// MySQLAutoIncrementColumnMustInteger is an advisor type for auto-increment column.
 	MySQLAutoIncrementColumnMustInteger Type = "bb.plugin.advisor.mysql.column.auto-increment-must-integer"
 
