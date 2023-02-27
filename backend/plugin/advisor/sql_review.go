@@ -123,6 +123,8 @@ const (
 	SchemaRuleCurrentTimeColumnCountLimit SQLReviewRuleType = "column.current-time-count-limit"
 	// SchemaRuleColumnRequireDefault enforce the column default.
 	SchemaRuleColumnRequireDefault SQLReviewRuleType = "column.require-default"
+	// SchemaRuleColumnDisallowDropInIndex disallow drop column in index.
+	SchemaRuleColumnDisallowDropInIndex SQLReviewRuleType = "column.disallow-drop-in-index"
 
 	// SchemaRuleSchemaBackwardCompatibility enforce the MySQL and TiDB support check whether the schema change is backward compatible.
 	SchemaRuleSchemaBackwardCompatibility SQLReviewRuleType = "schema.backward-compatibility"
@@ -820,6 +822,11 @@ func getAdvisorTypeByRule(ruleType SQLReviewRuleType, engine db.Type) (Type, err
 			return MySQLRequireColumnDefault, nil
 		case db.Postgres:
 			return PostgreSQLRequireColumnDefault, nil
+		}
+	case SchemaRuleColumnDisallowDropInIndex:
+		switch engine {
+		case db.MySQL, db.TiDB:
+			return MySQLColumnDisallowDropInIndexKeys, nil
 		}
 	case SchemaRuleTableRequirePK:
 		switch engine {

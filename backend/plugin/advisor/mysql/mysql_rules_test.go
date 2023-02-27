@@ -92,6 +92,8 @@ func TestMySQLRules(t *testing.T) {
 		advisor.SchemaRuleCurrentTimeColumnCountLimit,
 		// advisor.SchemaRuleColumnRequireDefault enforce the column default.
 		advisor.SchemaRuleColumnRequireDefault,
+		// advisor.SchemaRuleColumnDisallowDropInIndex disallow drop column in index.
+		advisor.SchemaRuleColumnDisallowDropInIndex,
 
 		// advisor.SchemaRuleSchemaBackwardCompatibility enforce the MySQL and TiDB support check whether the schema change is backward compatible.
 		advisor.SchemaRuleSchemaBackwardCompatibility,
