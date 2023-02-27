@@ -36,20 +36,23 @@
           handleResourceIdInput(($event.target as HTMLInputElement).value)
         "
       />
-      <ul class="w-full my-2 space-y-2 list-disc list-outside pl-4">
-        <li
-          v-for="validateMessage in state.validatedMessages"
-          :key="validateMessage.message"
-          class="break-words w-full text-xs"
-          :class="[
-            validateMessage.type === 'warning' && 'text-yellow-600',
-            validateMessage.type === 'error' && 'text-red-600',
-          ]"
-        >
-          {{ validateMessage.message }}
-        </li>
-      </ul>
     </template>
+    <ul
+      v-if="state.validatedMessages.length > 0"
+      class="w-full my-2 space-y-2 list-disc list-outside pl-4"
+    >
+      <li
+        v-for="validateMessage in state.validatedMessages"
+        :key="validateMessage.message"
+        class="break-words w-full text-xs"
+        :class="[
+          validateMessage.type === 'warning' && 'text-yellow-600',
+          validateMessage.type === 'error' && 'text-red-600',
+        ]"
+      >
+        {{ validateMessage.message }}
+      </li>
+    </ul>
   </div>
 </template>
 
@@ -75,7 +78,7 @@ interface LocalState {
   validatedMessages: ValidatedMessage[];
 }
 
-type ResourceType = "environment" | "idp";
+type ResourceType = "environment" | "instance" | "project" | "idp";
 
 const props = withDefaults(
   defineProps<{
@@ -83,12 +86,15 @@ const props = withDefaults(
     value: string;
     resourceTitle: string;
     readonly: boolean;
+    randomString: boolean;
     validator: (resourceId: ResourceId) => Promise<string | undefined>;
   }>(),
   {
     value: "",
     resourceTitle: "",
+    randomString: false,
     readonly: false,
+    validator: () => Promise.resolve(undefined),
   }
 );
 
@@ -99,10 +105,18 @@ const state = reactive<LocalState>({
   validatedMessages: [],
 });
 
+const resourceName = computed(() => {
+  return t(`resource.${props.resource}`);
+});
+
 const getPrefix = (resource: string) => {
   switch (resource) {
     case "environment":
       return "env";
+    case "instance":
+      return "ins";
+    case "project":
+      return "proj";
     case "idp":
       return "idp";
     default:
@@ -111,53 +125,9 @@ const getPrefix = (resource: string) => {
 };
 const randomSuffix = randomString(4).toLowerCase();
 
-const resourceName = computed(() => {
-  return t(`resource.${props.resource}`);
-});
-
 const shouldShowResourceIdField = computed(() => {
   return !props.readonly && state.isResourceIdChanged;
 });
-
-watch(
-  () => props.value,
-  (newValue) => {
-    state.resourceId = newValue;
-  }
-);
-
-watch(
-  () => props.resourceTitle,
-  (resourceTitle) => {
-    if (props.readonly) {
-      return;
-    }
-
-    if (!state.isResourceIdChanged && resourceTitle) {
-      const formatedTitle = resourceTitle
-        .toLowerCase()
-        .split("")
-        .map((char) => {
-          if (char === " ") {
-            return "-";
-          }
-          if (characters.includes(char)) {
-            return char;
-          }
-          return randomString(1);
-        })
-        .join("")
-        .toLowerCase();
-
-      state.resourceId = `${getPrefix(props.resource)}-${
-        formatedTitle || randomString(4).toLowerCase()
-      }-${randomSuffix}`;
-    }
-  },
-  {
-    immediate: true,
-  }
-);
 
 const handleResourceIdInput = (newValue: string) => {
   if (!state.isResourceIdChanged) {
@@ -208,7 +178,58 @@ const debounceHandleResourceIdChange = useDebounceFn(
       }
     }
   },
-  300
+  200
+);
+
+watch(
+  () => props.value,
+  (newValue) => {
+    state.resourceId = newValue;
+  }
+);
+
+watch(
+  () => props.resourceTitle,
+  (resourceTitle) => {
+    if (props.readonly) {
+      return;
+    }
+
+    if (!state.isResourceIdChanged) {
+      if (resourceTitle) {
+        const formatedTitle = resourceTitle
+          .toLowerCase()
+          .split("")
+          .map((char) => {
+            if (char === " ") {
+              return "";
+            }
+            if (characters.includes(char)) {
+              return char;
+            }
+            return randomString(1);
+          })
+          .join("")
+          .toLowerCase();
+
+        let name = "";
+        if (props.randomString) {
+          name = `${getPrefix(
+            props.resource
+          )}-${formatedTitle}-${randomSuffix}`;
+        } else {
+          name = `${formatedTitle || randomString(4).toLowerCase()}`;
+        }
+        debounceHandleResourceIdChange(name);
+      } else {
+        state.resourceId = "";
+        state.validatedMessages = [];
+      }
+    }
+  },
+  {
+    immediate: true,
+  }
 );
 
 defineExpose({
