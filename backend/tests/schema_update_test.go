@@ -48,8 +48,9 @@ func TestSchemaAndDataUpdate(t *testing.T) {
 
 	// Create a project.
 	project, err := ctl.createProject(api.ProjectCreate{
-		Name: "Test Project",
-		Key:  "TestSchemaUpdate",
+		ResourceID: generateRandomString("project", 10),
+		Name:       "Test Project",
+		Key:        "TestSchemaUpdate",
 	})
 	a.NoError(err)
 
@@ -66,6 +67,7 @@ func TestSchemaAndDataUpdate(t *testing.T) {
 
 	// Add an instance.
 	instance, err := ctl.addInstance(api.InstanceCreate{
+		ResourceID:    generateRandomString("instance", 10),
 		EnvironmentID: prodEnvironment.ID,
 		Name:          instanceName,
 		Engine:        db.SQLite,
@@ -283,7 +285,7 @@ func TestVCS1(t *testing.T) {
 		{
 			name:               "GitLab",
 			vcsProviderCreator: fake.NewGitLab,
-			vcsType:            vcs.GitLabSelfHost,
+			vcsType:            vcs.GitLab,
 			externalID:         "121",
 			repositoryFullPath: "test/schemaUpdate",
 			newWebhookPushEvent: func(added, modified [][]string, beforeSHA, afterSHA string) interface{} {
@@ -310,7 +312,7 @@ func TestVCS1(t *testing.T) {
 		{
 			name:               "GitHub",
 			vcsProviderCreator: fake.NewGitHub,
-			vcsType:            vcs.GitHubCom,
+			vcsType:            vcs.GitHub,
 			externalID:         "octocat/Hello-World",
 			repositoryFullPath: "octocat/Hello-World",
 			newWebhookPushEvent: func(added, modified [][]string, beforeSHA, afterSHA string) interface{} {
@@ -383,8 +385,9 @@ func TestVCS1(t *testing.T) {
 			// Create a project.
 			project, err := ctl.createProject(
 				api.ProjectCreate{
-					Name: "Test VCS Project",
-					Key:  "TestVCSSchemaUpdate",
+					ResourceID: generateRandomString("project", 10),
+					Name:       "Test VCS Project",
+					Key:        "TestVCSSchemaUpdate",
 				},
 			)
 			a.NoError(err)
@@ -426,6 +429,7 @@ func TestVCS1(t *testing.T) {
 
 			// Add an instance.
 			instance, err := ctl.addInstance(api.InstanceCreate{
+				ResourceID:    generateRandomString("instance", 10),
 				EnvironmentID: prodEnvironment.ID,
 				Name:          instanceName,
 				Engine:        db.SQLite,
@@ -694,7 +698,7 @@ func TestVCS_SDL(t *testing.T) {
 		{
 			name:               "GitLab",
 			vcsProviderCreator: fake.NewGitLab,
-			vcsType:            vcs.GitLabSelfHost,
+			vcsType:            vcs.GitLab,
 			externalID:         "121",
 			repositoryFullPath: "test/schemaUpdate",
 			newWebhookPushEvent: func(added, modified []string, beforeSHA, afterSHA string) interface{} {
@@ -719,7 +723,7 @@ func TestVCS_SDL(t *testing.T) {
 		{
 			name:               "GitHub",
 			vcsProviderCreator: fake.NewGitHub,
-			vcsType:            vcs.GitHubCom,
+			vcsType:            vcs.GitHub,
 			externalID:         "octocat/Hello-World",
 			repositoryFullPath: "octocat/Hello-World",
 			newWebhookPushEvent: func(added, modified []string, beforeSHA, afterSHA string) interface{} {
@@ -815,6 +819,7 @@ func TestVCS_SDL(t *testing.T) {
 			// Create a project
 			project, err := ctl.createProject(
 				api.ProjectCreate{
+					ResourceID:       generateRandomString("project", 10),
 					Name:             "Test VCS Project",
 					Key:              "TestVCSSchemaUpdate",
 					SchemaChangeType: api.ProjectSchemaChangeTypeSDL,
@@ -855,6 +860,7 @@ func TestVCS_SDL(t *testing.T) {
 			// Add an instance
 			instance, err := ctl.addInstance(
 				api.InstanceCreate{
+					ResourceID:    generateRandomString("instance", 10),
 					EnvironmentID: prodEnvironment.ID,
 					Name:          "pgInstance",
 					Engine:        db.Postgres,
@@ -1106,7 +1112,7 @@ func TestWildcardInVCSFilePathTemplate(t *testing.T) {
 		{
 			name:               "singleAsterisk",
 			vcsProviderCreator: fake.NewGitLab,
-			vcsType:            vcs.GitLabSelfHost,
+			vcsType:            vcs.GitLab,
 			baseDirectory:      "bbtest",
 			envName:            "wildcard",
 			filePathTemplate:   "{{ENV_NAME}}/*/{{DB_NAME}}##{{VERSION}}##{{TYPE}}##{{DESCRIPTION}}.sql",
@@ -1133,7 +1139,7 @@ func TestWildcardInVCSFilePathTemplate(t *testing.T) {
 		{
 			name:               "doubleAsterisks",
 			vcsProviderCreator: fake.NewGitLab,
-			vcsType:            vcs.GitLabSelfHost,
+			vcsType:            vcs.GitLab,
 			baseDirectory:      "bbtest",
 			envName:            "wildcard",
 			filePathTemplate:   "{{ENV_NAME}}/**/{{DB_NAME}}##{{VERSION}}##{{TYPE}}##{{DESCRIPTION}}.sql",
@@ -1166,7 +1172,7 @@ func TestWildcardInVCSFilePathTemplate(t *testing.T) {
 			vcsProviderCreator: fake.NewGitLab,
 			envName:            "wildcard",
 			baseDirectory:      "",
-			vcsType:            vcs.GitLabSelfHost,
+			vcsType:            vcs.GitLab,
 			filePathTemplate:   "{{ENV_NAME}}/**/foo/*/{{DB_NAME}}##{{VERSION}}##{{TYPE}}##{{DESCRIPTION}}.sql",
 			commitNewFileNames: []string{
 				// ** matches foo, foo matches foo, * matches bar
@@ -1194,7 +1200,7 @@ func TestWildcardInVCSFilePathTemplate(t *testing.T) {
 			vcsProviderCreator: fake.NewGitLab,
 			envName:            "prod1",
 			baseDirectory:      "bbtest",
-			vcsType:            vcs.GitLabSelfHost,
+			vcsType:            vcs.GitLab,
 			filePathTemplate:   "{{ENV_NAME}}/**/foo/*/{{DB_NAME}}##{{VERSION}}##{{TYPE}}##{{DESCRIPTION}}.sql",
 			commitNewFileNames: []string{
 				// ** matches foo, foo matches foo, * matches bar
@@ -1222,7 +1228,7 @@ func TestWildcardInVCSFilePathTemplate(t *testing.T) {
 			vcsProviderCreator: fake.NewGitLab,
 			envName:            "ZO",
 			baseDirectory:      "bbtest",
-			vcsType:            vcs.GitLabSelfHost,
+			vcsType:            vcs.GitLab,
 			filePathTemplate:   "{{ENV_NAME}}/{{DB_NAME}}/sql/{{DB_NAME}}##{{VERSION}}##{{TYPE}}##{{DESCRIPTION}}.sql",
 			commitNewFileNames: []string{
 				fmt.Sprintf("%s/%s/%s/sql/%s##ver1##migrate##create_table_t1.sql", baseDirectory, "ZO", dbName, dbName),
@@ -1279,8 +1285,9 @@ func TestWildcardInVCSFilePathTemplate(t *testing.T) {
 			// Create a project.
 			project, err := ctl.createProject(
 				api.ProjectCreate{
-					Name: "Test VCS Project",
-					Key:  "TVP",
+					ResourceID: generateRandomString("project", 10),
+					Name:       "Test VCS Project",
+					Key:        "TVP",
 				},
 			)
 			a.NoError(err)
@@ -1320,6 +1327,7 @@ func TestWildcardInVCSFilePathTemplate(t *testing.T) {
 			instanceDir, err := ctl.provisionSQLiteInstance(instanceRootDir, instanceName)
 			a.NoError(err)
 			instance, err := ctl.addInstance(api.InstanceCreate{
+				ResourceID:    generateRandomString("instance", 10),
 				EnvironmentID: environment.ID,
 				Name:          instanceName,
 				Engine:        db.SQLite,
@@ -1387,7 +1395,7 @@ func TestVCS_SQL_Review(t *testing.T) {
 		{
 			name:               "GitLab",
 			vcsProviderCreator: fake.NewGitLab,
-			vcsType:            vcs.GitLabSelfHost,
+			vcsType:            vcs.GitLab,
 			externalID:         "121",
 			repositoryFullPath: "test/schemaUpdate",
 			getEmptySQLReviewResult: func(repo *api.Repository, filePath, rootURL string) *api.VCSSQLReviewResult {
@@ -1423,7 +1431,7 @@ func TestVCS_SQL_Review(t *testing.T) {
 		{
 			name:               "GitHub",
 			vcsProviderCreator: fake.NewGitHub,
-			vcsType:            vcs.GitHubCom,
+			vcsType:            vcs.GitHub,
 			externalID:         "octocat/Hello-World",
 			repositoryFullPath: "octocat/Hello-World",
 			getEmptySQLReviewResult: func(repo *api.Repository, filePath, rootURL string) *api.VCSSQLReviewResult {
@@ -1518,8 +1526,9 @@ func TestVCS_SQL_Review(t *testing.T) {
 			// Create a project.
 			project, err := ctl.createProject(
 				api.ProjectCreate{
-					Name: "Test VCS Project",
-					Key:  "TestVCSSchemaUpdate",
+					ResourceID: generateRandomString("project", 10),
+					Name:       "Test VCS Project",
+					Key:        "TestVCSSchemaUpdate",
 				},
 			)
 			a.NoError(err)
@@ -1531,6 +1540,7 @@ func TestVCS_SQL_Review(t *testing.T) {
 
 			// Add an instance.
 			instance, err := ctl.addInstance(api.InstanceCreate{
+				ResourceID:    generateRandomString("instance", 10),
 				EnvironmentID: prodEnvironment.ID,
 				Name:          "pgInstance",
 				Engine:        db.Postgres,
@@ -1654,7 +1664,7 @@ func TestBranchNameInVCSSetupAndUpdate(t *testing.T) {
 
 	tests := []vcsTestCase{
 		{
-			vcsType:            vcs.GitLabSelfHost,
+			vcsType:            vcs.GitLab,
 			vcsProviderCreator: fake.NewGitLab,
 			externalID:         "1234",
 			repoFullPath:       "1234",
@@ -1694,7 +1704,7 @@ func TestBranchNameInVCSSetupAndUpdate(t *testing.T) {
 			},
 		},
 		{
-			vcsType:            vcs.GitHubCom,
+			vcsType:            vcs.GitHub,
 			vcsProviderCreator: fake.NewGitHub,
 			externalID:         "test/branch",
 			repoFullPath:       "test/branch",
@@ -1769,8 +1779,9 @@ func TestBranchNameInVCSSetupAndUpdate(t *testing.T) {
 			// Create a project.
 			project, err := ctl.createProject(
 				api.ProjectCreate{
-					Name: "Test VSC Project",
-					Key:  "TVP",
+					ResourceID: generateRandomString("project", 10),
+					Name:       "Test VSC Project",
+					Key:        "TVP",
 				},
 			)
 			a.NoError(err)
@@ -1998,8 +2009,9 @@ CREATE TABLE public.book (
 			}
 			project, err := ctl.createProject(
 				api.ProjectCreate{
-					Name: test.name,
-					Key:  test.name,
+					ResourceID: generateRandomString("project", 10),
+					Name:       test.name,
+					Key:        test.name,
 				},
 			)
 			a.NoError(err)
@@ -2008,6 +2020,7 @@ CREATE TABLE public.book (
 			switch test.dbType {
 			case db.Postgres:
 				instance, err = ctl.addInstance(api.InstanceCreate{
+					ResourceID:    generateRandomString("instance", 10),
 					EnvironmentID: environment.ID,
 					Name:          test.name,
 					Engine:        db.Postgres,
@@ -2017,6 +2030,7 @@ CREATE TABLE public.book (
 				})
 			case db.MySQL:
 				instance, err = ctl.addInstance(api.InstanceCreate{
+					ResourceID:    generateRandomString("instance", 10),
 					EnvironmentID: environment.ID,
 					Name:          "mysqlInstance",
 					Engine:        db.MySQL,
@@ -2101,8 +2115,9 @@ func TestMarkTaskAsDone(t *testing.T) {
 
 	// Create a project.
 	project, err := ctl.createProject(api.ProjectCreate{
-		Name: "Test Project",
-		Key:  "TestSchemaUpdate",
+		ResourceID: generateRandomString("project", 10),
+		Name:       "Test Project",
+		Key:        "TestSchemaUpdate",
 	})
 	a.NoError(err)
 
@@ -2119,6 +2134,7 @@ func TestMarkTaskAsDone(t *testing.T) {
 
 	// Add an instance.
 	instance, err := ctl.addInstance(api.InstanceCreate{
+		ResourceID:    generateRandomString("instance", 10),
 		EnvironmentID: prodEnvironment.ID,
 		Name:          instanceName,
 		Engine:        db.SQLite,
@@ -2214,7 +2230,7 @@ func TestVCS_SDL_MySQL(t *testing.T) {
 		{
 			name:               "GitLab",
 			vcsProviderCreator: fake.NewGitLab,
-			vcsType:            vcs.GitLabSelfHost,
+			vcsType:            vcs.GitLab,
 			externalID:         "121",
 			repositoryFullPath: "test/schemaUpdate",
 			newWebhookPushEvent: func(added, modified []string, beforeSHA, afterSHA string) interface{} {
@@ -2239,7 +2255,7 @@ func TestVCS_SDL_MySQL(t *testing.T) {
 		{
 			name:               "GitHub",
 			vcsProviderCreator: fake.NewGitHub,
-			vcsType:            vcs.GitHubCom,
+			vcsType:            vcs.GitHub,
 			externalID:         "octocat/Hello-World",
 			repositoryFullPath: "octocat/Hello-World",
 			newWebhookPushEvent: func(added, modified []string, beforeSHA, afterSHA string) interface{} {
@@ -2334,6 +2350,7 @@ func TestVCS_SDL_MySQL(t *testing.T) {
 			// Create a project
 			project, err := ctl.createProject(
 				api.ProjectCreate{
+					ResourceID:       generateRandomString("project", 10),
 					Name:             "Test VCS Project",
 					Key:              "TestVCSSchemaUpdate",
 					SchemaChangeType: api.ProjectSchemaChangeTypeSDL,
@@ -2373,6 +2390,7 @@ func TestVCS_SDL_MySQL(t *testing.T) {
 
 			// Add an instance
 			instance, err := ctl.addInstance(api.InstanceCreate{
+				ResourceID:    generateRandomString("instance", 10),
 				EnvironmentID: prodEnvironment.ID,
 				Name:          "mysqlInstance",
 				Engine:        db.MySQL,
