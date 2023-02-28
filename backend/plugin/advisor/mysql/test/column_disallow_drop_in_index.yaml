@@ -1,11 +1,21 @@
-- statement: CREATE TABLE t(a varchar(20))
-  want:
-    - status: SUCCESS
-      code: 0
-      title: OK
-      content: ""
-      line: 0
-- statement: CREATE TABLE t(a varchar(20) CHARSET ascii)
+#- statement: |-
+#    CREATE TABLE t(a int, b int);
+#    ALTER TABLE t DROP COLUMN a
+#  want:
+#    - status: SUCCESS
+#      code: 0
+#      title: OK
+#      content: ""
+#      line: 0
+- statement: |-
+    CREATE TABLE t  (
+        id int,
+        a varchar(255),
+        b int,
+        PRIMARY KEY (id),
+        UNIQUE INDEX a_uidx(a)
+    );
+    ALTER TABLE t DROP COLUMN a
   want:
     - status: WARN
       code: 414

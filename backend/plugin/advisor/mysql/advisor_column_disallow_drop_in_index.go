@@ -36,8 +36,9 @@ func (*ColumnDisallowDropInIndexAdvisor) Check(ctx advisor.Context, statement st
 		return nil, err
 	}
 	checker := &columnDisallowDropInIndexChecker{
-		level: level,
-		title: string(ctx.Rule.Type),
+		level:   level,
+		title:   string(ctx.Rule.Type),
+		catalog: ctx.Catalog,
 	}
 
 	for _, stmt := range stmtList {
@@ -74,8 +75,20 @@ func (checker *columnDisallowDropInIndexChecker) Enter(in ast.Node) (ast.Node, b
 				continue
 			}
 
+
 			tableName := node.Table.Name.O
 			column := spec.OldColumnName.Name.O
+
+			//columnInfo := checker.catalog.Origin.FindColumn(&catalog.ColumnFind{
+			//	TableName:  tableName,
+			//	ColumnName: column,
+			//})
+
+			table := checker.catalog.Origin.FindIndex()
+			_, pk := checker.catalog.Origin.FindIndex(&catalog.IndexFind{
+				TableName: tableName,
+				IndexName: ,
+			})
 
 			for _, index := range node.Table.TableInfo.Indices {
 				for _, indexColumn := range index.Columns {
@@ -91,6 +104,9 @@ func (checker *columnDisallowDropInIndexChecker) Enter(in ast.Node) (ast.Node, b
 					}
 				}
 			}
+
+			_ = pk
+
 		}
 	}
 

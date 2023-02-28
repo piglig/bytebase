@@ -374,6 +374,7 @@ func SetDefaultSQLReviewRulePayload(ruleTp SQLReviewRuleType) (string, error) {
 		SchemaRuleColumnAutoIncrementMustInteger,
 		SchemaRuleColumnDisallowSetCharset,
 		SchemaRuleColumnAutoIncrementMustUnsigned,
+		SchemaRuleColumnDisallowDropInIndex,
 		SchemaRuleCurrentTimeColumnCountLimit,
 		SchemaRuleColumnRequireDefault,
 		SchemaRuleSchemaBackwardCompatibility,
